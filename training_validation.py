@@ -7,6 +7,8 @@ import torch.nn as nn
 from models.gen import GEN
 from models.hgc_gcn import HGC_GCN
 from utils import *
+from torch_geometric.explain import Explainer, GNNExplainer, ModelConfig
+# from dgl.nn import GNNExplainer
 
 # training function at each epoch
 def train(model, device, train_loader, optimizer, epoch):
@@ -53,7 +55,7 @@ TRAIN_BATCH_SIZE = 256
 TEST_BATCH_SIZE = 256
 LR = 0.0005
 LOG_INTERVAL = 20
-NUM_EPOCHS = 1000
+NUM_EPOCHS = 1
 
 print('Learning rate: ', LR)
 print('Epochs: ', NUM_EPOCHS)
@@ -117,4 +119,23 @@ for dataset in datasets:
                 print('rmse improved at epoch ', best_epoch, '; best_test_mse,best_test_ci:', best_test_mse,best_test_ci,model_st,dataset)
             else:
                 print(ret[1],'No improvement since epoch ', best_epoch, '; best_test_mse,best_test_ci:', best_test_mse,best_test_ci,model_st,dataset)
+        
 
+    model_config = ModelConfig(
+        mode='regression',
+        task_level='graph',
+        return_type='raw',
+    )
+    
+    explainer = Explainer(
+        model=model,
+        algorithm=GNNExplainer(epochs=1),
+        explanation_type='model',
+        node_mask_type='object',
+        model_config=model_config,
+    )
+
+    explanation = explainer(
+    x=test_data.x,
+    # edge_index=test_data.edge_index,
+    )

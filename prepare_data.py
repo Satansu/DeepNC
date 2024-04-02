@@ -4,7 +4,7 @@ import os
 import json,pickle
 from collections import OrderedDict
 from rdkit import Chem
-from rdkit.Chem import MolFromSmiles
+from rdkit.Chem.rdmolfiles import MolFromSmiles, MolToSmiles
 import networkx as nx
 from utils import *
 
@@ -27,7 +27,7 @@ def one_of_k_encoding_unk(x, allowable_set):
     return list(map(lambda s: x == s, allowable_set))
 
 def smile_to_graph(smile):
-    mol = Chem.MolFromSmiles(smile)
+    mol = MolFromSmiles(smile)
     c_size = mol.GetNumAtoms()
     
     features = []
@@ -68,7 +68,7 @@ for dataset in datasets:
     drugs = []
     prots = []
     for d in ligands.keys():
-        lg = Chem.MolToSmiles(Chem.MolFromSmiles(ligands[d]),isomericSmiles=True)
+        lg = MolToSmiles(MolFromSmiles(ligands[d]),isomericSmiles=True)
         drugs.append(lg)
     for t in proteins.keys():
         prots.append(proteins[t])

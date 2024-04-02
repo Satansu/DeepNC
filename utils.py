@@ -5,7 +5,7 @@ from scipy import stats
 from torch_geometric.data import InMemoryDataset, DataLoader
 from torch_geometric import data as DATA
 import torch
-from torch_geometric.utils import true_negative, true_positive, false_negative, false_positive
+# from torch_geometric.utils import true_negative, true_positive, false_negative, false_positive
 
 class TestbedDataset(InMemoryDataset):
     def __init__(self, root='/tmp', dataset='davis', 
@@ -79,18 +79,82 @@ class TestbedDataset(InMemoryDataset):
         # save preprocessed data:
         torch.save((data, slices), self.processed_paths[0])
 
+def true_positive(pred, target, num_classes):
+    r"""Computes the number of true positive predictions.
+
+    Args:
+        pred (Tensor): The predictions.
+        target (Tensor): The targets.
+        num_classes (int): The number of classes.
+
+    :rtype: :class:`LongTensor`
+    """
+    out = []
+    for i in range(num_classes):
+        out.append(((pred == i) & (target == i)).sum())
+
+    return torch.tensor(out)
+
+def true_negative(pred, target, num_classes):
+    r"""Computes the number of true negative predictions.
+
+    Args:
+        pred (Tensor): The predictions.
+        target (Tensor): The targets.
+        num_classes (int): The number of classes.
+
+    :rtype: :class:`LongTensor`
+    """
+    out = []
+    for i in range(num_classes):
+        out.append(((pred != i) & (target != i)).sum())
+
+    return torch.tensor(out)
+
+def false_positive(pred, target, num_classes):
+    r"""Computes the number of false positive predictions.
+
+    Args:
+        pred (Tensor): The predictions.
+        target (Tensor): The targets.
+        num_classes (int): The number of classes.
+
+    :rtype: :class:`LongTensor`
+    """
+    out = []
+    for i in range(num_classes):
+        out.append(((pred == i) & (target != i)).sum())
+
+    return torch.tensor(out)
+
+def false_negative(pred, target, num_classes):
+    r"""Computes the number of false negative predictions.
+
+    Args:
+        pred (Tensor): The predictions.
+        target (Tensor): The targets.
+        num_classes (int): The number of classes.
+
+    :rtype: :class:`LongTensor`
+    """
+    out = []
+    for i in range(num_classes):
+        out.append(((pred != i) & (target == i)).sum())
+
+    return torch.tensor(out)
+
 def rmse(y,f):
     rmse = sqrt(((y - f)**2).mean(axis=0))
     return rmse
 def mse(y,f):
     mse = ((y - f)**2).mean(axis=0)
     return mse
-# def pearson(y,f):
-#     rp = np.corrcoef(y, f)[0,1]
-#     return rp
-# def spearman(y,f):
-#     rs = stats.spearmanr(y, f)[0]
-#     return rs
+def pearson(y,f):
+    rp = np.corrcoef(y, f)[0,1]
+    return rp
+def spearman(y,f):
+    rs = stats.spearmanr(y, f)[0]
+    return rs
 def ci(y,f):
     ind = np.argsort(y)
     y = y[ind]

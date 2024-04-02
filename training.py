@@ -7,8 +7,8 @@ import torch.nn as nn
 from models.gen import GEN
 from models.hgc_gcn import HGC_GCN
 from utils import *
-from torch_geometric.utils import true_positive, false_positive, false_negative, true_negative
-from sklearn.metrics import roc_curve, auc, plot_roc_curve, roc_auc_score
+# from torch_geometric.utils import true_positive, false_positive, false_negative, true_negative
+# from sklearn.metrics import roc_curve, auc, plot_roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 
 
@@ -82,7 +82,7 @@ TRAIN_BATCH_SIZE = 256
 TEST_BATCH_SIZE = 256
 LR = 0.0005
 LOG_INTERVAL = 20
-NUM_EPOCHS = 1000
+NUM_EPOCHS = 2
 
 print('Learning rate: ', LR)
 print('Epochs: ', NUM_EPOCHS)
